@@ -11,12 +11,26 @@ public class AIStateMachine : MonoBehaviour
     };
 
     private VelocityReporter reporter;
-    private MinionAI minion;
+    private GuardAI guard;
     public AIState aiState;
+    private GameObject lightObject;
+    private GameObject coneObject;
     // Use this for initialization
     void Start () {
-        minion = GetComponent<MinionAI>();
+        guard = GetComponent<GuardAI>();
         aiState = AIState.Stationary;
+        lightObject = this.gameObject.transform.GetChild(0).gameObject;
+        int i = 0;
+        while (lightObject.name != "Light") {
+            i++;
+            lightObject = this.gameObject.transform.GetChild(i).gameObject;
+        }
+        i = 0;
+        coneObject = lightObject.transform.GetChild(0).gameObject;
+        while(coneObject.name != "Cone") {
+            i++;
+            coneObject = lightObject.transform.GetChild(0).gameObject;
+        }
     }
 
     void Update () {
@@ -26,33 +40,16 @@ public class AIStateMachine : MonoBehaviour
         // closeEnoughForMeleeAttack(enemy))
         // aiState = AIState.AttackPlayerWithMelee;
         //Assess the current state, possibly deciding to change to a different state
-        GameObject[] waypoints = minion.waypoints;
-        int currWaypoint = minion.currWaypoint;
-        // if (currWaypoint >= (waypoints.Length - 1)) {
-        //         currWaypoint = 0;
-        // } else {
-        //         currWaypoint++;
-        // }
+        LightLineOfSight los = coneObject.GetComponent<LightLineOfSight>();
         switch (aiState) {
             case AIState.Stationary:
-                //if(ammoCount == 0)
-                // aiState = AIState.GoToAmmoDepot;
-                //else
-                // SteerTo(nextWaypoint);
-                if (currWaypoint >= 0 && currWaypoint < waypoints.Length) {
-                    reporter = waypoints[currWaypoint].GetComponent<VelocityReporter>();
-                    if (reporter != null) {
-                        aiState = AIState.Moving;
-                    }
+                if (los.foundSomething) {
+                    aiState = AIState.Moving;
                 }
                 break;
             case AIState.Moving:
-
-                if (currWaypoint >= 0 && currWaypoint < waypoints.Length) {
-                    reporter = waypoints[currWaypoint].GetComponent<VelocityReporter>();
-                    if (reporter == null) {
-                        aiState = AIState.Stationary;
-                    }
+                if (!los.foundSomething) {
+                    aiState = AIState.Stationary;
                 }
                 break;
 
