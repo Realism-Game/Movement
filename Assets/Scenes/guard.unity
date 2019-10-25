@@ -553,7 +553,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 717875827}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.710001, y: 1, z: 7.56}
+  m_LocalPosition: {x: 20.41, y: 1, z: 10.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -829,6 +829,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AIThirdPersonController (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 869403976177489729, guid: f12889dd854e771458411849910e379d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 869403975566388075, guid: f12889dd854e771458411849910e379d,
         type: 3}
@@ -1383,7 +1388,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1966727104
 Transform:
   m_ObjectHideFlags: 0
@@ -1393,7 +1398,7 @@ Transform:
   m_GameObject: {fileID: 1966727103}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.341, y: 1.5, z: 0.184}
-  m_LocalScale: {x: 0.099999994, y: 2, z: 0.02}
+  m_LocalScale: {x: 0.2533726, y: 2, z: 0.018077599}
   m_Children: []
   m_Father: {fileID: 1359765576}
   m_RootOrder: 0

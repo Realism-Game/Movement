@@ -49,10 +49,12 @@ public class AIStateMachine : MonoBehaviour
                 }
                 break;
             case AIState.Moving:
-                if (!los.foundSomething && los.collisionObject != null) {
-                    aiState = AIState.LostQuarry;
+                if (!los.foundSomething) {
+                    
                     if (los.collisionObject == null){
                         aiState = AIState.Stationary;
+                    } else {
+                        aiState = AIState.LostQuarry;
                     }
                 } 
                 break;
