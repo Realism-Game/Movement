@@ -28,16 +28,23 @@ public class GuardAI : MonoBehaviour
         previousYRotate = this.transform.eulerAngles.y;
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKey(KeyCode.P)){
+            Debug.Log("velocity: " + myNavMeshAgent.velocity);
+            Debug.Log("acceleration: " + myNavMeshAgent.acceleration);
+            Debug.Log("speed: " + myNavMeshAgent.speed);
+        }
         //anim.SetFloat("Forward", myNavMeshAgent.velocity.magnitude / myNavMeshAgent.speed);
         if (!myNavMeshAgent.pathPending) {
 
             if (myNavMeshAgent.remainingDistance == 0) {
                 setNextWaypoint();
             } else if (stateMachine.aiState == AIStateMachine.AIState.Moving) {
-                if ((myNavMeshAgent.remainingDistance - myNavMeshAgent.stoppingDistance) >= 0.25f) {
+                if ((myNavMeshAgent.remainingDistance - myNavMeshAgent.stoppingDistance) >= 0.25f && los.collisionObject != null) {
                     Vector3 destination = getMovingWaypointDestination();
                     myNavMeshAgent.SetDestination(destination);
                 }
