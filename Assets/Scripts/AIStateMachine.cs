@@ -6,7 +6,8 @@ public class AIStateMachine : MonoBehaviour
 {
     public enum AIState {
         Stationary,
-        Moving
+        Moving,
+        LostQuarry
         //TODO more? states…
     };
 
@@ -48,11 +49,20 @@ public class AIStateMachine : MonoBehaviour
                 }
                 break;
             case AIState.Moving:
-                if (!los.foundSomething) {
+                if (!los.foundSomething && los.collisionObject != null) {
+                    aiState = AIState.LostQuarry;
+                    if (los.collisionObject == null){
+                        aiState = AIState.Stationary;
+                    }
+                } 
+                break;
+            case AIState.LostQuarry:
+                if (los.foundSomething) {
+                    aiState = AIState.Moving;
+                } else if (!los.foundSomething && los.collisionObject == null){
                     aiState = AIState.Stationary;
                 }
-                break;
-
+                break;                
             //... TODO handle other states
             default:
                 break;

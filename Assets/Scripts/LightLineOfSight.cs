@@ -55,18 +55,15 @@ public class LightLineOfSight: MonoBehaviour{
     }
 
     IEnumerator afterTrigger() {
-        yield return new WaitForSeconds(.01f);
-        Destroy(collisionObject);
-        foundSomething = false;
-        
+        yield return new WaitForSeconds(Time.deltaTime);
+        collisionObject = null;
     }
 
-    // void OnTriggerExit(Collider c) {
-    //     foundSomething = false;
-    //     if (c.gameObject.CompareTag("Detectable")) {
-    //         foundSomething = false;
-    //     }
-
-    //     //StartCoroutine(afterTrigger());
-    // }
+    void OnTriggerExit(Collider c) {
+        if (c.gameObject.CompareTag("Detectable")) {
+            Debug.Log("lost quarry");
+            foundSomething = false;
+            StartCoroutine(afterTrigger());
+        }
+    }
 }

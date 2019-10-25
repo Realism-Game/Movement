@@ -16,6 +16,7 @@ public class GuardAI : MonoBehaviour
     private int stationary;
     private ThirdPersonCharacter character;
     private LightLineOfSight los;
+    private Vector3 lastSeen;
     // Start is called before the first frame update
     void Start()
     {
@@ -48,8 +49,11 @@ public class GuardAI : MonoBehaviour
                     Vector3 destination = getMovingWaypointDestination();
                     myNavMeshAgent.SetDestination(destination);
                 }
+            } else if (stateMachine.aiState == AIStateMachine.AIState.LostQuarry && lastSeen != new Vector3(-100f, -100f, -100f)) {
+                Debug.Log("Last Seen: " + lastSeen);
+                myNavMeshAgent.SetDestination(lastSeen);
+                lastSeen = new Vector3(-100f, -100f, -100f);
             }
-
             if (myNavMeshAgent.remainingDistance > myNavMeshAgent.stoppingDistance)
                 character.Move(myNavMeshAgent.desiredVelocity, false, false);
             else
@@ -61,6 +65,7 @@ public class GuardAI : MonoBehaviour
             //Debug.Log(myNavMeshAgent.remainingDistance - myNavMeshAgent.stoppingDistance);
             GameObject g = los.collisionObject;
             Vector3 destination = g.transform.position;
+            lastSeen = destination;
             //Debug.Log("waypoint "+destination);
             if (stateMachine.aiState == AIStateMachine.AIState.Moving  && currWaypoint != 0) {
                 //predict position
@@ -86,6 +91,7 @@ public class GuardAI : MonoBehaviour
                 **/
                 //Debug.Log("futureTarget "+futureTarget);
             }
+            
             return destination;
     }
 
@@ -138,6 +144,7 @@ public class GuardAI : MonoBehaviour
             }
             if (gameObject != null) {
                 los.foundSomething = false;
+                los.collisionObject = null;
                 Destroy(c.gameObject);
                 Collider collider = gameObject.GetComponent<Collider>();
                 collider.enabled = true;
