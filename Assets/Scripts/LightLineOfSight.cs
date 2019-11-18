@@ -26,13 +26,16 @@ public class LightLineOfSight: MonoBehaviour{
         if (maybeFoundSomething) {
             float distance = Vector3.Distance(parent.transform.position, collisionObject.transform.position);
             if (Physics.Raycast(parent.transform.position, parent.transform.TransformDirection(Vector3.forward), out hit, distance, layerMask)){
-                Debug.DrawRay(parent.transform.position, parent.transform.TransformDirection(Vector3.forward) * distance, Color.red, 5.0f);         
+                //Debug.DrawRay(parent.transform.position, parent.transform.TransformDirection(Vector3.forward) * distance, Color.red, 5.0f);         
                 foundSomething = false;
                 collisionObject = null;
             } else {
+                Bounds bound = collisionObject.GetComponent<Renderer>().bounds;
+                Vector3 center = bound.center;
+                Vector3 normal = center.normalized;
                 Debug.Log("collision");
+                //Debug.DrawRay(parent.transform.position, max - parent.transform.position, Color.green, 5.0f);
                 foundSomething = true;
-                //collider.enabled = false;
             }
             maybeFoundSomething = false;
         }

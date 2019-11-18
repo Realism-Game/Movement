@@ -5,8 +5,8 @@ using UnityEngine;
 public class AIStateMachine : MonoBehaviour
 {
     public enum AIState {
-        Stationary,
-        Moving,
+        Normal,
+        Pursuit,
         LostQuarry
         //TODO more? states…
     };
@@ -14,24 +14,29 @@ public class AIStateMachine : MonoBehaviour
     private VelocityReporter reporter;
     private GuardAI guard;
     public AIState aiState;
-    private GameObject lightObject;
-    private GameObject coneObject;
+    public float delay = 2f;
+    private FieldOfView fov;
+    private AudioSource alertSound;
+    private MeshRenderer exclamationPoint;
+    private MeshRenderer questionMark;
     // Use this for initialization
     void Start () {
         guard = GetComponent<GuardAI>();
-        aiState = AIState.Stationary;
-        lightObject = this.gameObject.transform.GetChild(0).gameObject;
-        int i = 0;
-        while (lightObject.name != "Light") {
-            i++;
-            lightObject = this.gameObject.transform.GetChild(i).gameObject;
+        fov = GetComponent<FieldOfView>();
+        aiState = AIState.Normal;
+        alertSound = GetComponent<AudioSource>();
+        Component[] meshes = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer mesh in meshes) {
+            if (mesh.name == "!") {
+                exclamationPoint = mesh;
+                Debug.Log(mesh.name);
+            } else if (mesh.name == "?") {
+                questionMark = mesh;
+                Debug.Log(mesh.name);
+            }
         }
-        i = 0;
-        coneObject = lightObject.transform.GetChild(0).gameObject;
-        while(coneObject.name != "Cone") {
-            i++;
-            coneObject = lightObject.transform.GetChild(0).gameObject;
-        }
+        //exclamationPoint = GetComponentInChildren<MeshRenderer>();
+        //questionMark = GetComponentInChildren<MeshRenderer>();
     }
 
     void Update () {
@@ -41,34 +46,53 @@ public class AIStateMachine : MonoBehaviour
         // closeEnoughForMeleeAttack(enemy))
         // aiState = AIState.AttackPlayerWithMelee;
         //Assess the current state, possibly deciding to change to a different state
-        LightLineOfSight los = coneObject.GetComponent<LightLineOfSight>();
+        
+        
         switch (aiState) {
-            case AIState.Stationary:
-                if (los.foundSomething) {
-                    aiState = AIState.Moving;
+            case AIState.Normal:
+                if (fov.visibleTarget) {
+                    aiState = AIState.Pursuit;
+                    alertSound.Play(0);
+                    exclamationPoint.enabled = true;
+                    StartCoroutine(DisableWithDelay(delay, exclamationPoint));
                 }
                 break;
-            case AIState.Moving:
-                if (!los.foundSomething) {
-                    
-                    if (los.collisionObject == null){
-                        aiState = AIState.Stationary;
-                    } else {
+            case AIState.Pursuit:
+                if (!fov.visibleTarget) {
+                    if (fov.lostQuarry) {
                         aiState = AIState.LostQuarry;
+                        exclamationPoint.enabled = false;
+                        questionMark.enabled = true;
+                    } else {
+                        aiState = AIState.Normal;
+                        exclamationPoint.enabled = false;
                     }
                 } 
                 break;
             case AIState.LostQuarry:
-                if (los.foundSomething) {
-                    aiState = AIState.Moving;
-                } else if (!los.foundSomething && los.collisionObject == null){
-                    aiState = AIState.Stationary;
+                if (fov.visibleTarget) {
+                    aiState = AIState.Pursuit;
+                    questionMark.enabled = false;
+                } else if (!fov.lostQuarry) {
+                    aiState = AIState.Normal;
+                    questionMark.enabled = false;
+                    exclamationPoint.enabled = false;
                 }
+                // if (los.foundSomething) {
+                //     aiState = AIState.Pursuit;
+                // } else if (!los.foundSomething && los.collisionObject == null){
+                //     aiState = AIState.Normal;
+                // }
                 break;                
             //... TODO handle other states
             default:
                 break;
         }
 
+    }
+
+    private IEnumerator DisableWithDelay(float delay, MeshRenderer mesh) {
+        yield return new WaitForSeconds (delay);
+        mesh.enabled = false;
     }
 }
